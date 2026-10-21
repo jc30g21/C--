@@ -42,7 +42,7 @@ double q_over_m = q / m;
 
 double mu0 = 1.0; 
 double dipole_moment = 300.0; 
-double dipole_coeff = mu0 * dipole_moment / (4.0 * pi); 
+double dipole_coeff = mu0 * sdipole_moment / (4.0 * pi); 
 
 double r_earth = 1.0; 
 double l_shell = 2.0;
@@ -51,7 +51,7 @@ double dt = 0.01;
 double T_max = 300.0; 
 int n_steps = static_cast<int>(std::ceil( T_max / dt)) + 1; 
 
-int num_particles = 1000;
+int num_particles = 1000000;
 int random_seed = 42; 
 
 Vec3 dipole_B(Vec3 position, double coeff) {
@@ -152,7 +152,7 @@ std::cout << "First velocity: "
           << initial_velocities[0].y << ", "
           << initial_velocities[0].z << '\n';  
 
-std::vector<bool> is_lost(num_particles, false);
+std::vector<unsigned char> is_lost(num_particles, false);
 std::vector<double> hit_times(num_particles, std::numeric_limits<double>::quiet_NaN());
 
 double B_eq = dipole_coeff / (l_shell * l_shell * l_shell);
@@ -170,10 +170,6 @@ std::cout << "Equatorial field at L=" << l_shell << ": " << B_eq << '\n';
 std::cout << "Injection rho/Rc: first particle = " << rho_over_Rc[0] << '\n';
 std::cout << "Maximum omega*dt at surface: " << omega_max_at_surface * dt << '\n';
 
-if (omega_max_at_surface * dt > 0.05) {
-    std::cout << "WARNING: omega*dt at the surface exceeds 0.05. "
-              << "Consider reducing dt.\n";
-}
 Vec3 B_at_equator = dipole_B(Vec3{l_shell, 0.0, 0.0}, dipole_coeff);
 std::cout << "Magnetic field at equator: "
           << B_at_equator.x << ", "
@@ -191,6 +187,7 @@ double speed_after = std::sqrt(dot(rotated_v, rotated_v));
 std::cout << "Test speed before: " << speed_before << '\n';
 std::cout << "Test speed after:  " << speed_after << '\n';
 
+#pragma omp parallel for
 for (int p = 0; p < num_particles; ++p) {
     Vec3 r = initial_positions[p];
     Vec3 v_at_zero = initial_velocities[p];
