@@ -64,7 +64,7 @@ double r_earth = 1.0;
 double l_shell = 2.0;
 
 double dt = 0.01; 
-double T_max = 300.0; 
+double T_max = 500.0; 
 int n_steps = static_cast<int>(std::ceil( T_max / dt)) + 1; 
 
 int num_particles = 100000;
