@@ -64,10 +64,10 @@ double r_earth = 1.0;
 double l_shell = 2.0;
 
 double dt = 0.01; 
-double T_max = 500.0; 
+double T_max = 300.0; 
 int n_steps = static_cast<int>(std::ceil( T_max / dt)) + 1; 
 
-int num_particles = 100000;
+int num_particles = 10000000;
 int random_seed = 42; 
 
 Vec3 dipole_B(Vec3 position, double coeff) {
@@ -227,7 +227,7 @@ int main() {
     std::cout << "Number of particles: " << initial_positions.size() << '\n';
 std::vector<Vec3> initial_velocities(num_particles);
 // 3. Create a grid and sanity check
-Grid3D dipole_grid = make_grid(-2.5, 2.5, 0.0125, dipole_coeff);
+Grid3D dipole_grid = make_grid(-2.5, 2.5, 0.25, dipole_coeff);
 std::cout << "Grid points per axis: " << dipole_grid.nx << '\n'; 
 std::cout << "Stored B values: " << dipole_grid.magnetic_field.size() << '\n';
 // 4. 
