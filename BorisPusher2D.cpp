@@ -15,6 +15,18 @@ struct Vec3 {
     double z;
 }; 
 
+struct Grid2D {
+    int nx;
+    int ny; 
+
+    std::vector<double> x;
+    std::vector<double> y;
+
+    std::vector<Vec3> magnetic_field;
+    std::vector<Vec3> electric_field;
+};
+
+
 Vec3 add(Vec3 a, Vec3 b) {
     return {a.x + b.x, a.y + b.y, a.z + b.z};
 }
@@ -50,16 +62,19 @@ int n_steps = static_cast<int>(std::ceil( T_max / dt)) + 1;
 int num_particles = 1000;
 int random_seed = 42; 
 
-Vec3 boris_rotate(Vec3 v, Vec3 B, double q_over_m, double dt) {
-    Vec3 t = scalar(B, q_over_m * dt * 0.5); 
+Vec3 boris_push(Vec3 v, Vec3 B, Vec3 E, double q_over_m, double dt) {
+    
+    Vec3 v_minus = add(v, scalar(E, q_over_m * dt * 0.5)); 
 
-    Vec3 v_prime = add(v, cross(v, t));
+    Vec3 t = scalar(B, q_over_m * dt * 0.5 ); 
 
-    double t_squared = dot(t, t);
+    Vec3 v_prime = add(v_minus, cross(v_minus, t));
 
-    Vec3 s = scalar(t, 2.0 / (1.0 + t_squared));
+    Vec3 s = scalar(t, 2.0 / (1.0 + dot(t, t))); 
 
-    Vec3 v_next = add(v, cross(v_prime, s)); 
+    Vec3 v_plus = add(v_minus, cross(v_prime, s));
+
+    Vec3 v_next = add(v_plus, scalar(E, q_over_m * dt * 0.5)); 
 
     return v_next;
 }
